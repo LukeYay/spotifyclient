@@ -17,19 +17,6 @@ METHODS = {
     'put': requests.put,
 }
 
-COMMAND_GROUPS = {
-    'register': ['register'],
-    'increase_volume': ['turn up', 'louder', 'increase volume', 'volume up'],
-    'decrease_volume': ['turn down', 'quieter', 'decrease volume', 'volume down'],
-    'next_track': ['next track', 'next', 'skip'],
-    'previous_track': ['go back', 'previous track', 'previous', 'last track', 'last'],
-    'pause': ['pause', 'stop'],
-    'resume': ['resume', 'play', 'continue'],
-    'restart_track': ['restart track', 'restart'],
-    'start_playing': ['start splaying', 'start', 'play'],
-    'search': ['search', 'find']
-}
-
 
 class Spotify:
 
