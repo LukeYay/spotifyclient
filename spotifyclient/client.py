@@ -341,32 +341,6 @@ class Spotify:
 
         return r.status_code == 204, response_message
 
-    @staticmethod
-    def command_valid(command):
-        """
-        Returns whether the command is valid, and a reason if not.
-
-        :param command: The entered command.
-        :return: matched command, error
-        """
-        if command == '':
-            return None, 'No command entered'
-
-        # Check if the command exactly matches a valid command
-        for command_group in COMMAND_GROUPS:
-            for valid_command in COMMAND_GROUPS[command_group]:
-                if command == valid_command:
-                    return command, None
-
-        # If not, see if the start of the command matches a valid command
-        command_parts = command.split(' ')
-        for command_group in COMMAND_GROUPS:
-            for valid_command in COMMAND_GROUPS[command_group]:
-                if command_parts[0] == valid_command:
-                    return command_parts[0], None
-
-        return None, f'"{command}" is not a valid command'
-
     # endregion
 
     #region SEARCH
