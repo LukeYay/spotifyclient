@@ -297,6 +297,7 @@ class Spotify:
     # endregion
 
     # region API
+
     def _get(self, command, query_params=None, data_params=None):
         return self.submit_command('get', command, query_params, data_params)
 
@@ -330,7 +331,7 @@ class Spotify:
 
     # endregion
 
-    #region SEARCH
+    # region SEARCH
 
     def search_tracks(self, search_term, types, limit=50, exact_match=False, all_pages=False):
 
@@ -440,4 +441,4 @@ class Spotify:
     def do_search(self, search_term, search_type='artist,track,album', exact_match=False):
         return self.search_tracks(search_term, search_type, exact_match=exact_match)
 
-    #endregion
+    # endregion
