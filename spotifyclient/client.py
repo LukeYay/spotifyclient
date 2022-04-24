@@ -197,18 +197,6 @@ class Spotify:
     def play_album_by_uri(self, device_id, uri):
         return self._put('play', query_params={'device_id': device_id}, data_params={'context_uri': uri})
 
-    def get_track_by_id(self, track_id):
-        tracks_full_url = BASE_URL + TRACKS_PATH + '/' + track_id
-
-        tracks_response = requests.get(tracks_full_url, headers=self._get_api_headers())
-
-        tracks_data = json.loads(tracks_response.content)
-
-        artist = tracks_data['artists'][0]['name']
-        album = tracks_data['album']['name']
-
-        print(artist + ': ' + album)
-
     def get_user_currently_playing(self):
         raise NotImplementedError()
 
@@ -337,6 +325,19 @@ class Spotify:
             response_message += f' | Message: {r.text}'
 
         return r.status_code == 204, response_message
+
+    # endregion
+
+    # region DATA
+
+    def get_track_by_id(self, track_id):
+        tracks_full_url = BASE_URL + TRACKS_PATH + '/' + track_id
+
+        r = requests.get(tracks_full_url, headers=self._get_api_headers())
+
+        track_data = json.loads(r.content)
+
+        return None, track_data
 
     # endregion
 
