@@ -267,14 +267,14 @@ class Spotify:
                 return f'Unauthorised | Code: {r.status_code}', None
 
         recent_data = json.loads(r.content)
-        recent_items = []
 
         if all_data:
             for recent_item in recent_data['items']:
                 recent_item['played_at_datetime'] = datetime.strptime(recent_item['played_at'], "%Y-%m-%dT%H:%M:%S.%fZ")
                 recent_item['played_at_friendly'] = recent_item['played_at_datetime'].strftime('%-d %b %Y %H:%M')
-            return None, recent_items
+            return None, recent_data['items']
 
+        recent_items = []
         for recent_item in recent_data['items']:
             artist_name = recent_item['track']['artists'][0]['name']
             track_name = recent_item['track']['name']
