@@ -254,7 +254,7 @@ class Spotify:
             }
         return None, returned_devices
 
-    def get_recently_played(self, as_json=False):
+    def get_recently_played(self, as_json=False, all_data=False):
         profile_player_url = BASE_URL + PLAYER_PATH + '/recently-played'
 
         r = requests.get(profile_player_url, headers=self.get_user_api_headers())
@@ -268,7 +268,14 @@ class Spotify:
 
         recent_data = json.loads(r.content)
         recent_items = []
-        for index, recent_item in enumerate(recent_data['items']):
+
+        if all_data:
+            for recent_item in recent_data['items']:
+                recent_item['played_at_datetime'] = datetime.strptime(recent_item['played_at'], "%Y-%m-%dT%H:%M:%S.%fZ")
+                recent_item['played_at_friendly'] = recent_item['played_at_datetime'].strftime('%-d %b %Y %H:%M')
+            return None, recent_items
+
+        for recent_item in recent_data['items']:
             artist_name = recent_item['track']['artists'][0]['name']
             track_name = recent_item['track']['name']
             album_name = recent_item['track']['album']['name']
@@ -290,7 +297,9 @@ class Spotify:
                     'album_image_url': album_image_url
                 })
             else:
-                recent_items.append((artist_name, track_name, album_name, played_at_friendly, preview_url, album_image_url))
+                recent_items.append((
+                    artist_name, track_name, album_name, played_at_friendly, preview_url, album_image_url)
+                )
 
         return None, recent_items
 
@@ -440,5 +449,49 @@ class Spotify:
 
     def do_search(self, search_term, search_type='artist,track,album', exact_match=False):
         return self.search_tracks(search_term, search_type, exact_match=exact_match)
+
+    # endregion
+
+    # region Admin
+
+    def start_register(self, command):
+        if len(command) == 0:
+            return False, ''
+        if command != 'register':
+            return False, ''
+
+        try:
+            existing_number = db.get_existing_number(command)
+            return False, ''
+        except NoResultFound:
+            pass
+
+        new_number = ConnectionNumber()
+        new_number.number = command
+        new_number.status_id = 1
+        new_number.verification_code = random_code(length=6)
+        db.session.commit()
+
+        return True, new_number.verification_code
+
+
+    def verify_number(self, command):
+        if len(command) == 0:
+            return False, ''
+        if command != 'verify':
+            return False, ''
+
+        try:
+            existing_number = db.get_existing_number(command)
+        except NoResultFound:
+            return False, ''
+
+        if command != existing_number.verification_code:
+            return False, ''
+
+        existing_number.status_id = 2  # Verified
+        db.session.commit()
+
+        return True, new_number.get_oauth_url()
 
     # endregion
