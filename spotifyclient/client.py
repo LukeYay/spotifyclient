@@ -324,7 +324,7 @@ class Spotify:
         if r.status_code == 401 and not has_retried:
             return self.submit_command(method, command, additional_query_params, additional_body_params, True)
 
-        return r.ok, r.json()
+        return r.ok, '' if r.status_code == 204 else r.json()
 
     # endregion
 
