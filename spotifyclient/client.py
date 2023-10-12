@@ -38,7 +38,7 @@ class Spotify:
         return access_token
 
     def _get_user_access_token(self):
-        access_token, _ = self._get_access_token(self._get_generic_auth_params())
+        access_token, _ = self._get_access_token(self._get_user_auth_params())
         return access_token
 
     @staticmethod
