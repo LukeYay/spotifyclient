@@ -67,7 +67,7 @@ class Spotify:
                           params=auth_params)
 
         if 200 <= r.status_code < 400:
-            response_auth = json.loads(r.content)
+            response_auth = r.json()
             if 'access_token' in response_auth:
                 self.access_token = response_auth['access_token']
                 self.token_expires = datetime.utcnow() + timedelta(seconds=response_auth['expires_in'])
@@ -94,7 +94,7 @@ class Spotify:
                           params=auth_params)
 
         if 200 <= r.status_code < 400:
-            response_auth = json.loads(r.content)
+            response_auth = r.json()
             if 'access_token' in response_auth:
                 self.access_token = response_auth['access_token']
                 self.token_expires = datetime.utcnow() + timedelta(seconds=response_auth['expires_in'])
@@ -113,13 +113,9 @@ class Spotify:
     # region VOLUME
 
     def get_current_volume(self, device_id):
-        result, message = self._get('devices')
+        result, devices_data = self._get('devices')
         if not result:
             return None
-
-        device_content = message
-
-        devices_data = json.loads(device_content.content)
 
         devices = devices_data['devices']
         for device in devices:
@@ -224,11 +220,7 @@ class Spotify:
             else:
                 return f'Failed to get current device| Code: {r.status_code}', None
 
-        devices_data = json.loads(r.content)
-
-        devices = devices_data['devices']
-
-        for device in devices:
+        for device in r.json()['devices']:
             if device['is_active']:
                 return None, device['id']
 
@@ -246,9 +238,8 @@ class Spotify:
                 return f'Failed to refresh access: Type: "get" | Command: "devices" | Code: {r.status_code} ' \
                        f'| Text: {r.text}', None
 
-        devices_data = json.loads(r.content)
         returned_devices = {}
-        for index, device in enumerate(devices_data['devices']):
+        for index, device in enumerate(r.json()['devices']):
             returned_devices[index+1] = {
                 'name': device['name'],
                 'id': device['id']
@@ -267,7 +258,7 @@ class Spotify:
             else:
                 return f'Unauthorised | Code: {r.status_code}', None
 
-        recent_data = json.loads(r.content)
+        recent_data = r.json()
 
         if all_data:
             for recent_item in recent_data['items']:
@@ -333,11 +324,7 @@ class Spotify:
         if r.status_code == 401 and not has_retried:
             return self.submit_command(method, command, additional_query_params, additional_body_params, True)
 
-        response_message = f'Method: {method} | Command: {command} | Code: {r.status_code}'
-        if r.text is not None and r.text != '':
-            response_message += f' | Message: {r.text}'
-
-        return r.status_code == 204, response_message
+        return r.ok, r.json()
 
     # endregion
 
@@ -348,9 +335,7 @@ class Spotify:
 
         r = requests.get(tracks_full_url, headers=self._get_api_headers())
 
-        track_data = json.loads(r.content)
-
-        return None, track_data
+        return None, r.json()
 
     # endregion
 
@@ -403,12 +388,11 @@ class Spotify:
         }
         r = requests.get(request_url, headers=self._get_api_headers(), params=params)
         if r.status_code != 200:
-            response_data = json.loads(r.content)
-            error = response_data['error']
+            error = r.json()['error']
             print('Error getting results: ' + error['message'])
             return None
 
-        results_data = json.loads(r.content)
+        results_data = r.json()
 
         artists_data = results_data.get('artists', [])
         albums_data = results_data.get('albums', [])
@@ -445,14 +429,11 @@ class Spotify:
                 # time.sleep(1)
                 r = requests.get(next_items, headers=self._get_api_headers())
                 if r.status_code != 200:
-                    response_data = json.loads(r.content)
-                    error = response_data['error']
+                    error = r.json()['error']
                     print('Error getting results: ' + error['message'])
                     break
 
-                results_data = json.loads(r.content)
-
-                data = results_data[field]
+                data = r.json()[field]
 
                 for item in data['items']:
                     extract_method(item, results)
