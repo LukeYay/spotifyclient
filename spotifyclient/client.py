@@ -160,7 +160,7 @@ class Spotify:
             search_term = parts[1]
         else:
             if parts[1] in ['artist', 'album', 'track']:
-                search_type = parts[1]
+                search_type = [parts[1]]
                 search_term = ' '.join(parts[2:])
             else:
                 search_term = ' '.join(parts[1:])
@@ -397,7 +397,7 @@ class Spotify:
 
         request_url = BASE_URL + '/search'
         params = {
-            'q': f'"{search_term}" NOT Karaoke' if exact_match else search_term,
+            'q': ' '.join([f'{t}:{search_term}' for t in types]) if exact_match else search_term,
             'type': types,
             'limit': limit
         }
