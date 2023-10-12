@@ -113,11 +113,11 @@ class Spotify:
     # region VOLUME
 
     def get_current_volume(self, device_id):
-        response = self._get('devices')
-        if not response.success:
+        result, message = self._get('devices')
+        if not result:
             return None
 
-        device_content = response.content
+        device_content = message
 
         devices_data = json.loads(device_content.content)
 
