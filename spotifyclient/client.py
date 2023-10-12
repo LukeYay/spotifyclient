@@ -181,7 +181,7 @@ class Spotify:
             if result['name'].lower() == search_term.lower():
                 return self.play_song_by_uri(device_id, result['uri'])
 
-        return False, f'No result found for {search_term} \'{search_term}\''
+        return False, f'No result found for {search_type} \'{search_term}\''
 
     def resume_song(self, device_id):
         return self.start_playing(device_id)
