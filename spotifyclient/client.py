@@ -1,6 +1,6 @@
 import base64
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import requests
 
@@ -25,6 +25,7 @@ class Spotify:
         self.client_secret = client_secret
         self.refresh_token = refresh_token
         self.access_token = None
+        self.token_expires = None
 
     # region AUTH
 
@@ -64,7 +65,8 @@ class Spotify:
             response_auth = json.loads(r.content)
             if 'access_token' in response_auth:
                 self.access_token = response_auth['access_token']
-                return self.access_token
+                self.token_expires = datetime.utcnow() + timedelta(seconds=response_auth['expires_in'])
+                return self.access_token, self.token_expires
 
         return
 
@@ -90,7 +92,8 @@ class Spotify:
             response_auth = json.loads(r.content)
             if 'access_token' in response_auth:
                 self.access_token = response_auth['access_token']
-                return self.access_token
+                self.token_expires = datetime.utcnow() + timedelta(seconds=response_auth['expires_in'])
+                return self.access_token, self.token_expires
 
         return
 
