@@ -68,7 +68,7 @@ class Spotify:
 
         return
 
-    def _refresh_user_access_token(self):
+    def refresh_user_access_token(self):
         if self.refresh_token is None:
             raise PermissionError()
 
