@@ -63,7 +63,8 @@ class Spotify:
         if 200 <= r.status_code < 400:
             response_auth = json.loads(r.content)
             if 'access_token' in response_auth:
-                return response_auth['access_token']
+                self.access_token = response_auth['access_token']
+                return self.access_token
 
         return
 
