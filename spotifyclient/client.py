@@ -34,10 +34,12 @@ class Spotify:
         return base64.b64encode(client_combined.encode("utf-8"))
 
     def _get_generic_access_token(self):
-        return self._get_access_token(self._get_generic_auth_params())
+        access_token, _ = self._get_access_token(self._get_generic_auth_params())
+        return access_token
 
     def _get_user_access_token(self):
-        return self._get_access_token(self._get_user_auth_params())
+        access_token, _ = self._get_access_token(self._get_generic_auth_params())
+        return access_token
 
     @staticmethod
     def _get_generic_auth_params():
@@ -52,6 +54,9 @@ class Spotify:
         }
 
     def _get_access_token(self, auth_params):
+        if self.access_token is not None and self.token_expires > datetime.utcnow():
+            return self.access_token
+
         header_auth = {
             'Authorization': 'Basic '.encode() + self._get_base64_auth(),
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -68,7 +73,7 @@ class Spotify:
                 self.token_expires = datetime.utcnow() + timedelta(seconds=response_auth['expires_in'])
                 return self.access_token, self.token_expires
 
-        return
+        return None, None
 
     def refresh_user_access_token(self):
         if self.refresh_token is None:
