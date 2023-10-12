@@ -55,7 +55,7 @@ class Spotify:
 
     def _get_access_token(self, auth_params):
         if self.access_token is not None and self.token_expires > datetime.utcnow():
-            return self.access_token
+            return self.access_token, self.token_expires
 
         header_auth = {
             'Authorization': 'Basic '.encode() + self._get_base64_auth(),
